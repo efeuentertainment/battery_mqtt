@@ -1,5 +1,7 @@
 # coding: utf-8
 import subprocess
+import socket
+print(socket.gethostname())
 
 # get voltage
 string_before_cleaning_and_decoding =  subprocess.Popen("sudo i2cget -y 1 0x62 0x02 w", shell=True, stdout=subprocess.PIPE).stdout
