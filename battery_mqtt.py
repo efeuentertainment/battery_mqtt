@@ -3,7 +3,6 @@
 import subprocess
 import socket
 import paho.mqtt.client as mqtt
-#print(socket.gethostname())
 import threading
 
 updateID = 0
@@ -19,32 +18,22 @@ def measure():
     string_before_cleaning_and_decoding =  subprocess.Popen("sudo i2cget -y 1 0x62 0x02 w", shell=True, stdout=subprocess.PIPE).stdout
     string_before_cleaning = string_before_cleaning_and_decoding.read()
 
-    # remove the 0x starting byte
+    # cleanup measurement
     string = string_before_cleaning[2:]
-    # print(string)
-
-    # convert the reported string to number
     number_raw_volts = int(string, 16)
-
-    # swap MSB and LSB bytes
     number_volts = ((number_raw_volts & 0xFF00) >> 8) | ((number_raw_volts & 0x00FF) << 8)
-
-    # multiply decimal
     uV_volts = number_volts * 305
-
-    # divide to get the voltage
     voltage = uV_volts / 1000
 
     #mqtt publish results
-    #client.publish("pancake/Vb", payload="measured", qos=0, retain=False)
     client.publish(str(socket.gethostname()) + "/Vb", payload=voltage, qos=0, retain=False)
     
     global updateID
     updateID += 1
-    client.publish(str(socket.gethostname()) + "/Vb", payload=updateID,  qos=0, retain=False)
+    client.publish(str(socket.gethostname()) + "/updateID", payload=updateID,  qos=0, retain=False)
 
     # output the voltage
-#    print(str(voltage) + "mV")
+    #print(str(voltage) + "mV")
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
@@ -52,7 +41,6 @@ def on_connect(client, userdata, flags, rc):
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
     #client.subscribe("test/topic") 
-    #print(str(socket.gethostname()) + "/Vb " + str(voltage))
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
@@ -61,14 +49,10 @@ def on_message(client, userdata, msg):
 client = mqtt.Client()
 #client.on_connect = on_connect
 #client.on_message = on_message
-
 client.connect("192.168.1.44", 1883, 60)
 
+#start interval timer thread
 measure()
-#def main(argv):
     
 while True:
     client.loop()
-
-#if __name__ == '__main__':
-#    main(sys.argv[1:])
