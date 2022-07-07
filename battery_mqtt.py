@@ -2,7 +2,12 @@
 import subprocess
 import socket
 import paho.mqtt.client as mqtt
-print(socket.gethostname())
+#print(socket.gethostname())
+import threading
+
+def printit():
+    threading.Timer(60.0, printit).start()
+    print "Hello, World!"
 
 # get voltage
 string_before_cleaning_and_decoding =  subprocess.Popen("sudo i2cget -y 1 0x62 0x02 w", shell=True, stdout=subprocess.PIPE).stdout
@@ -25,30 +30,35 @@ uV_volts = number_volts * 305
 voltage = uV_volts / 1000
 
 # output the voltage
-print(voltage)
+print(str(voltage) + "mV")
+
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
-    publish(socket.gethostname(), voltage, qos=0, retain=False)
-
+    client.publish("test/topic", voltage, qos=0, retain=False)
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
-    # client.subscribe("$SYS/#")
+    client.subscribe("test/topic") 
+    print(str(socket.gethostname()) + "/Vb " + str(voltage))
 
 # The callback for when a PUBLISH message is received from the server.
-#def on_message(client, userdata, msg):
-#    print(msg.topic+" "+str(msg.payload))
+def on_message(client, userdata, msg):
+    print(msg.topic+" "+str(msg.payload))
 
 client = mqtt.Client()
 client.on_connect = on_connect
-#client.on_message = on_message
+client.on_message = on_message
 
 client.connect("192.168.1.44", 1883, 60)
+
+printit()
 
 # Blocking call that processes network traffic, dispatches callbacks and
 # handles reconnecting.
 # Other loop*() functions are available that give a threaded interface and a
 # manual interface.
-#client.loop_forever()
+while True:
+    client.loop()
+
 
