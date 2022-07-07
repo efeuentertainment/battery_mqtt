@@ -8,9 +8,9 @@ import threading
 updateID = 0
 
 def measure():
-#    threading.Timer(5.0, measure).start()
+#    threading.Timer(30.0, measure).start()
 #    print "start measurement"
-    t = threading.Timer(5.0, measure)
+    t = threading.Timer(30.0, measure)
     t.daemon = True
     t.start()
 
