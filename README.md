@@ -21,5 +21,5 @@ Install:
 `python battery_mqtt.py`  
 
 autostart, add to `/etc/rc.local` above `exit 0`  
-`python battery_mqtt.py`  
+`python battery_mqtt.py &`  
 
