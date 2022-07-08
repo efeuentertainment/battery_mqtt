@@ -20,6 +20,6 @@ Install:
 `sudo chmod +x battery_mqtt.py`  
 `python battery_mqtt.py`  
 
-autostart, add to `/etc/rc.local` above `exit 0`  
-`python battery_mqtt.py &`  
+for autostart, add to `/etc/rc.local` above `exit 0`  
+`python /usr/local/battery_mqtt/battery_mqtt.py &`  
 
