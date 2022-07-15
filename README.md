@@ -13,7 +13,7 @@ MQTT publish topics:
 
 Install:  
 `sudo apt update`  
-`sudo apt install python-paho-mqtt`  
+`sudo apt install git i2c-tools python-paho-mqtt`  
 `cd /usr/local/`  
 `sudo git clone https://github.com/efeuentertainment/battery_mqtt.git`  
 `cd battery_mqtt/`  
