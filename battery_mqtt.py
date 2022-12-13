@@ -9,7 +9,6 @@ import threading
 updateID = 0
 
 def measure():
-#    threading.Timer(30.0, measure).start()
 #    print "start measurement"
     t = threading.Timer(5.0, measure)
     t.daemon = True
@@ -25,7 +24,7 @@ def measure():
     number_volts = ((number_raw_volts & 0xFF00) >> 8) | ((number_raw_volts & 0x00FF) << 8)
     uV_volts = number_volts * 305
     voltage = uV_volts / 1000
-
+    
     #mqtt publish results
     client.publish(str(socket.gethostname()) + "/Vb", payload=voltage, qos=0, retain=False)
     
@@ -48,12 +47,12 @@ def on_message(client, userdata, msg):
     print(msg.topic+" "+str(msg.payload))
 
 client = mqtt.Client()
-#client.on_connect = on_connect
-#client.on_message = on_message
+client.on_connect = on_connect
+client.on_message = on_message
 client.connect("192.168.1.44", 1883, 60)
 
 #start interval timer thread
 measure()
     
 while True:
-    client.loop()
+    client.loop_forever()
